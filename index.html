@@ -1,0 +1,84 @@
+<html>
+<head>
+	<title>JAL FLIGHT FUN ! TODOUFUKEN STAMP</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script type="text/javascript" src="jquery.qrcode.min.js"></script>
+</head>
+<body>
+	<p id="prefecture"></p>
+	<p id="tree"></p>
+	<p id="flower"></p>
+	<p id="bird"></p>
+	<p id="description"></p>
+	<p id="qrcode"></p>
+	<script>
+
+		const prefectureList = document.getElementById("prefecture");
+		const url = 'jal_flight_fun.csv';
+
+		fetch(url)
+		.then(function(response)
+		{
+			response.text().then(function(text)
+			{
+				if (text.startsWith('prefecture_id, prefecture_name, prefecture_hash, area_id, prefecture_comment1, prefecture_comment2, prefecture_tree, prefecture_flower, prefecture_bird'))
+				{
+					items = text.split('\n');
+					items.shift();
+					if (items.length > 0)
+					{
+						console.log(items);
+						var prefectures = '<option>---</option>';
+						for (i = 0; i < items.length; i++)
+						{
+							var prefecture = items[i].split(', ');
+							prefectures = prefectures + '<option value="' + prefecture[2] + '" desc="' + prefecture[4].replace('\\n', '\n\n') + '\n\n' + prefecture[5].replace('\\n', '\n\n') + '" tree="' + prefecture[6] + '" flower="' + prefecture[7] + '" bird="' + prefecture[8] + '">' + prefecture[0] + '. ' + prefecture[1] + '</option>'
+						}
+						prefectureList.innerHTML = 'Prefecture: <select name="prefectureList" id="prefectureList" onchange="changePrefecture(this)">' + prefectures + '</select>';
+					}
+					else
+					{
+						console.log('Failed to fetch resources!');
+					}
+				}
+				else
+				{
+					console.log('Failed to fetch resources!');
+				}
+			});
+		})
+		.catch(function(err) {
+			console.log('Failed to fetch resources!');
+		});
+
+		function changePrefecture(prefecture)
+		{
+			$('#tree').empty();
+			$('#flower').empty();
+			$('#bird').empty();
+			$('#description').empty();
+			$('#qrcode').empty();
+			if (prefecture.value.length == 64)
+			{
+				$('#tree').text('Tree: ' + $('option:selected', prefecture).attr('tree'));
+				$('#flower').text('Flower: ' + $('option:selected', prefecture).attr('flower'));
+				$('#bird').text('Bird: ' + $('option:selected', prefecture).attr('bird'));
+				$('#description').text('Description: ' + $('option:selected', prefecture).attr('desc'));
+				$('#qrcode').qrcode({
+					text: prefecture.value
+				});
+			}
+		}
+
+	</script>
+	<style>
+		html {
+				background-color: #fff;
+		    color: #333;
+		    font-family: "ヒラギノ角ゴ ProN W3","メイリオ",Meiryo,"MS UI Gothic","Tahoma","Lucida Grande","ヒラギノ丸ゴ Pro W4",sans-serif;
+		    -webkit-text-size-adjust: 100%;
+		    text-size-adjust: 100%;
+		}
+	</style>
+</body>
+</html>
